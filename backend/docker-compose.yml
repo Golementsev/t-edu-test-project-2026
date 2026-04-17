@@ -1,0 +1,65 @@
+version: '3.8'
+
+# ═════════════════════════════════════════════════════════════════
+#  Docker Compose для запуска BookStore с инфраструктурой
+#
+#  Использование:
+#    docker-compose up -d          # запустить всё
+#    docker-compose down -v        # остановить и удалить тома
+#
+#  После запуска:
+#    Приложение:      http://localhost:8080
+#    API документация: http://localhost:8080/swagger-ui.html
+#    PostgreSQL:      localhost:5432
+# ═════════════════════════════════════════════════════════════════
+
+services:
+
+  # ── PostgreSQL — основная БД ──────────────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    container_name: bookstore-postgres
+    environment:
+      POSTGRES_DB: bookstore
+      POSTGRES_USER: bookstore
+      POSTGRES_PASSWORD: bookstore
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./src/main/resources/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bookstore"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── BookStore API — наше приложение ──────────────────────────
+  bookstore-api:
+    build: .
+    container_name: bookstore-api
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bookstore
+      SPRING_DATASOURCE_USERNAME: bookstore
+      SPRING_DATASOURCE_PASSWORD: bookstore
+      ISBN_SERVICE_URL: https://www.googleapis.com/books/v1
+      NOTIFICATION_SERVICE_URL: http://notification-mock:8081
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ── WireMock — заглушка для уведомлений ──────────────────────
+  # Симулирует Notification Service в dev/test окружении
+  notification-mock:
+    image: wiremock/wiremock:3.4.2
+    container_name: notification-wiremock
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./wiremock/mappings:/home/wiremock/mappings
+    command: --verbose
+
+volumes:
+  postgres-data:
