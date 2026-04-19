@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(of = "id")
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OrderItem {
 
     @Id
@@ -24,6 +25,7 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)

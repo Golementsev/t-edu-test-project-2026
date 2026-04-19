@@ -17,6 +17,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test-setup.js'],
+    exclude: ['node_modules', 'tests/e2e/**'],
     reporters: ['default', 'allure-vitest/reporter'],
     outputFile: {
       'allure-vitest/reporter': './allure-results/results.xml',

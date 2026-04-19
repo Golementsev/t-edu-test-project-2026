@@ -3,6 +3,7 @@ package ru.qaschool.bookstore.integration;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
 import io.qameta.allure.*;
+import ru.qaschool.bookstore.annotation.Layer;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;

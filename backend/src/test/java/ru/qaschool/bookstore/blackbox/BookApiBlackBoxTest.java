@@ -1,6 +1,7 @@
 package ru.qaschool.bookstore.blackbox;
 
 import io.qameta.allure.*;
+import ru.qaschool.bookstore.annotation.Layer;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.*;

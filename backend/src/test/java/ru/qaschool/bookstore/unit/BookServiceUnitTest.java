@@ -1,6 +1,7 @@
 package ru.qaschool.bookstore.unit;
 
 import io.qameta.allure.*;
+import ru.qaschool.bookstore.annotation.Layer;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -223,7 +224,7 @@ class BookServiceUnitTest {
                     .build();
 
             when(bookRepository.findById(1L)).thenReturn(Optional.of(testBook));
-            when(bookRepository.save(any(Book.class))).thenAnswer(inv -> inv.getArgument(0));
+            lenient().when(bookRepository.save(any(Book.class))).thenAnswer(inv -> inv.getArgument(0));
         }
 
         @Test

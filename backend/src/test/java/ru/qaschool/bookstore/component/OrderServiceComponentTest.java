@@ -1,6 +1,7 @@
 package ru.qaschool.bookstore.component;
 
 import io.qameta.allure.*;
+import ru.qaschool.bookstore.annotation.Layer;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

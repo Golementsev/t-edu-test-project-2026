@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 @Builder
 @ToString(exclude = "author")
 @EqualsAndHashCode(of = "id")
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Book {
 
     @Id
