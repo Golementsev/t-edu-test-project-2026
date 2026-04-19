@@ -78,7 +78,7 @@ describe('BookCard — наличие на складе', () => {
 
   it('показывает количество, когда книга есть в наличии', () => {
     render(<BookCard book={createBook({ stockQuantity: 5 })} onAddToCart={() => {}} />)
-    expect(screen.getByTestId('book-stock')).toHaveTextContent('5 шт')
+    expect(screen.getByTestId('book-stock')).toHaveTextContent('В наличии: 5 шт.')
   })
 
   it('показывает "Нет в наличии" при stockQuantity = 0', () => {
@@ -90,7 +90,7 @@ describe('BookCard — наличие на складе', () => {
     render(<BookCard book={createBook({ stockQuantity: 3 })} onAddToCart={() => {}} />)
     const btn = screen.getByTestId('add-to-cart-btn')
     expect(btn).not.toBeDisabled()
-    expect(btn).toHaveTextContent('В корзину')
+    expect(btn).toHaveTextContent('+ В корзину')  // компонент рендерит '+ В корзину'
   })
 
   it('кнопка "В корзину" заблокирована при отсутствии товара', () => {

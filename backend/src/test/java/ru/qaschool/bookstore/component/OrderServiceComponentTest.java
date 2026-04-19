@@ -12,6 +12,7 @@ import ru.qaschool.bookstore.domain.Book;
 import ru.qaschool.bookstore.domain.Order;
 import ru.qaschool.bookstore.exception.OutOfStockException;
 import ru.qaschool.bookstore.repository.BookRepository;
+import ru.qaschool.bookstore.repository.OrderRepository;
 import ru.qaschool.bookstore.service.IsbnLookupClient;
 import ru.qaschool.bookstore.service.NotificationClient;
 import ru.qaschool.bookstore.service.OrderService;
@@ -59,6 +60,9 @@ class OrderServiceComponentTest {
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
     // ── @MockBean заменяет бин в Spring-контексте на мок ───────────────
     @MockBean
@@ -174,11 +178,17 @@ class OrderServiceComponentTest {
         Order order = orderService.placeOrder("buyer@email.com", items);
         orderService.confirmOrder(order.getId());
 
-        // Вручную переводим в DELIVERED (в реальном приложении это делал бы другой сервис)
-        order.setStatus(Order.OrderStatus.DELIVERED);
+        // Вручную переводим в DELIVERED через репозиторий (в реальном приложении это делал бы другой сервис)
+        // Важно: нельзя просто сделать order.setStatus() — это detached объект;
+        // нужно загрузить из БД и сохранить обратно, чтобы cancelOrder увидел актуальный статус
+        Order fresh = orderRepository.findById(order.getId()).orElseThrow();
+        fresh.setStatus(Order.OrderStatus.DELIVERED);
+        orderRepository.save(fresh);
+        orderRepository.flush(); // сбрасываем в БД до вызова cancelOrder
 
         // ACT + ASSERT
         assertThatThrownBy(() -> orderService.cancelOrder(order.getId()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("DELIVERED");
     }
 }
